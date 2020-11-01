@@ -91,8 +91,6 @@ class MyClient(discord.Client):
                 response = response.decode("utf-8")
                 await message.channel.send(response)
                 return
-        except:
-            pass
 
             if (
                 message_lower.split(" ")[0] == ACTIVATION_WORD
@@ -101,6 +99,8 @@ class MyClient(discord.Client):
                 map_user(message_lower.split(" ")[2], message_lower.split(" ")[3])
                 await message.channel.send("User mapped.")
                 return
+        except:
+            pass
 
         if ACTIVATION_WORD in message_lower:
             await message.channel.send(generate_markov())
