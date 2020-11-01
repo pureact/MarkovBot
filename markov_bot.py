@@ -69,36 +69,38 @@ class MyClient(discord.Client):
                     append_message(msg.content, msg.author.id)
             await message.channel.send("History downloaded!")
             return
+        try:
+            if (
+                message_lower.split(" ")[0] == ACTIVATION_WORD
+                and message_lower.split(" ")[1] == "profile"
+            ):
+                if message_lower.split(" ")[2] in USER_ID_MAP:
+                    response = subprocess.check_output(
+                        "pipenv run python3 markov_subprocess.py {}".format(
+                            USER_ID_MAP.get(message_lower.split(" ")[2])
+                        ),
+                        shell=True,
+                    )
+                else:
+                    response = subprocess.check_output(
+                        "pipenv run python3 markov_subprocess.py {}".format(
+                            message_lower.split(" ")[2]
+                        ),
+                        shell=True,
+                    )
+                response = response.decode("utf-8")
+                await message.channel.send(response)
+                return
+        except:
+            pass
 
-        if (
-            message_lower.split(" ")[0] == ACTIVATION_WORD
-            and message_lower.split(" ")[1] == "profile"
-        ):
-            if message_lower.split(" ")[2] in USER_ID_MAP:
-                response = subprocess.check_output(
-                    "pipenv run python3 markov_subprocess.py {}".format(
-                        USER_ID_MAP.get(message_lower.split(" ")[2])
-                    ),
-                    shell=True,
-                )
-            else:
-                response = subprocess.check_output(
-                    "pipenv run python3 markov_subprocess.py {}".format(
-                        message_lower.split(" ")[2]
-                    ),
-                    shell=True,
-                )
-            response = response.decode("utf-8")
-            await message.channel.send(response)
-            return
-
-        if (
-            message_lower.split(" ")[0] == ACTIVATION_WORD
-            and message_lower.split(" ")[1] == "map"
-        ):
-            map_user(message_lower.split(" ")[2], message_lower.split(" ")[3])
-            await message.channel.send("User mapped.")
-            return
+            if (
+                message_lower.split(" ")[0] == ACTIVATION_WORD
+                and message_lower.split(" ")[1] == "map"
+            ):
+                map_user(message_lower.split(" ")[2], message_lower.split(" ")[3])
+                await message.channel.send("User mapped.")
+                return
 
         if ACTIVATION_WORD in message_lower:
             await message.channel.send(generate_markov())
